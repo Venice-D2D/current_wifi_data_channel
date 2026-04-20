@@ -1,0 +1,24 @@
+name: current_wifi_data_channel
+description: "Transmit data between devices through local (with router) Wi-Fi network."
+publish_to: none
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  venice_core:
+    git: https://github.com/Venice-D2D/venice_core.git
+  network_info_plus: ^8.0.0
+  connectivity_plus: ^7.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
