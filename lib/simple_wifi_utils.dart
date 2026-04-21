@@ -109,7 +109,7 @@ class SimpleWifiUtils {
     String? activeInterface = await getActiveInterfaceByType(interfaceType);
 
     debugPrint(
-      "[SimpleWifiChannel::getIpAndMaskForActiveInterfaceByType] Active wifi interface $activeInterface",
+      "[CurrentWifiChannel::getIpAndMaskForActiveInterfaceByType] Active wifi interface $activeInterface",
     );
 
     if (activeInterface != null) {
@@ -134,7 +134,7 @@ class SimpleWifiUtils {
             );
 
         debugPrint(
-          "[SimpleWifiChannel::getIpAndMaskForActiveInterfaceByType] Active wifi interface info $activeInterfaceInfo",
+          "[CurrentWifiChannel::getIpAndMaskForActiveInterfaceByType] Active wifi interface info $activeInterfaceInfo",
         );
 
         if (activeInterfaceInfo.isNotEmpty) {

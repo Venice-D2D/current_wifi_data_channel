@@ -80,18 +80,18 @@ class CurrentWifiDataChannel extends DataChannel {
       ); //This value has to be correct because we are on the same network
 
       debugPrint(
-        '[SimpleWifiChannel::initReceiver] Expected BSSID: ${data.apIdentifier}',
+        '[CurrentWifiChannel::initReceiver] Expected BSSID: ${data.apIdentifier}',
       );
-      debugPrint('[SimpleWifiChannel::initReceiver] Name: $networkName');
+      debugPrint('[CurrentWifiChannel::initReceiver] Name: $networkName');
 
-      debugPrint('[SimpleWifiChannel::initReceiver] BSSID: $bssid');
-      debugPrint('[SimpleWifiChannel::initReceiver] IP: $ip');
+      debugPrint('[CurrentWifiChannel::initReceiver] BSSID: $bssid');
+      debugPrint('[CurrentWifiChannel::initReceiver] IP: $ip');
 
       debugPrint(
-        '[SimpleWifiChannel::initReceiver] remoteNetworkInt: $remoteNetworkInt',
+        '[CurrentWifiChannel::initReceiver] remoteNetworkInt: $remoteNetworkInt',
       );
       debugPrint(
-        '[SimpleWifiChannel::initReceiver] localNetworkInt: $localNetworkInt',
+        '[CurrentWifiChannel::initReceiver] localNetworkInt: $localNetworkInt',
       );
 
       if (localNetworkInt != remoteNetworkInt) {
@@ -106,7 +106,7 @@ class CurrentWifiDataChannel extends DataChannel {
     while (!connected) {
       try {
         debugPrint(
-          '[SimpleWifiChannel::initReceiver] Connecting to: ${data.address}:${data.port}',
+          '[CurrentWifiChannel::initReceiver] Connecting to: ${data.address}:${data.port}',
         );
         final socket = await Socket.connect(
           data.address,
@@ -114,13 +114,13 @@ class CurrentWifiDataChannel extends DataChannel {
           timeout: const Duration(seconds: 5),
         );
         debugPrint(
-          '[SimpleWifiChannel::initReceiver] Client is connected to: ${socket.remoteAddress.address}:${socket.remotePort}',
+          '[CurrentWifiChannel::initReceiver] Client is connected to: ${socket.remoteAddress.address}:${socket.remotePort}',
         );
         client = socket;
         connected = true;
       } catch (err) {
         debugPrint(
-          "[SimpleWifiChannel::initReceiver] Failed to connect to host, retrying...",
+          "[CurrentWifiChannel::initReceiver] Failed to connect to host, retrying...",
         );
         await Future.delayed(const Duration(seconds: 1));
       }
@@ -151,7 +151,7 @@ class CurrentWifiDataChannel extends DataChannel {
             messageBytes,
           ); //String.fromCharCodes(data); // Decode bytes to string
           debugPrint(
-            "SimpleWifiChannel::client.listen]==> MESSAGE RECEIVED $jsonString",
+            "CurrentWifiChannel::client.listen]==> MESSAGE RECEIVED $jsonString",
           );
           msg = VeniceMessage.fromJson(jsonString);
         } else {
@@ -162,18 +162,18 @@ class CurrentWifiDataChannel extends DataChannel {
         try {
           int msgId = msg.messageId;
           debugPrint(
-            "SimpleWifiChannel::client.listen]==> MESSAGE #$msgId COMPLETE",
+            "CurrentWifiChannel::client.listen]==> MESSAGE #$msgId COMPLETE",
           );
           on(DataChannelEvent.data, msg);
           debugPrint(
-            "SimpleWifiChannel::client.listen]==> Sending acknowledgement",
+            "CurrentWifiChannel::client.listen]==> Sending acknowledgement",
           );
           if (!useProtoBuf) {
-            debugPrint("SimpleWifiChannel::client.listen]==> Sending JSON Ack");
+            debugPrint("CurrentWifiChannel::client.listen]==> Sending JSON Ack");
             client!.write(VeniceMessage.acknowledgement(msgId).toJson());
           } else {
             debugPrint(
-              "SimpleWifiChannel::client.listen]==> Sending ProtoBuf Ack",
+              "CurrentWifiChannel::client.listen]==> Sending ProtoBuf Ack",
             );
             VeniceMessageProto messageProto = VeniceMessage.acknowledgement(
               msgId,
@@ -184,13 +184,13 @@ class CurrentWifiDataChannel extends DataChannel {
           }
           await client!.flush();
           debugPrint(
-            "SimpleWifiChannel::client.listen]==> Acknowledgement sent",
+            "CurrentWifiChannel::client.listen]==> Acknowledgement sent",
           );
           buffer.removeRange(0, 4 + messageLength);
           messageLength = -1;
         } catch (e) {
           debugPrint(
-            "SimpleWifiChannel::client.listen]==> MESSAGE NOT COMPLETE, WAITING FOR NEXT DATA",
+            "CurrentWifiChannel::client.listen]==> MESSAGE NOT COMPLETE, WAITING FOR NEXT DATA",
           );
         }
       }
@@ -203,7 +203,7 @@ class CurrentWifiDataChannel extends DataChannel {
         .checkConnectivity());
 
     debugPrint(
-      "[SimpleWifiChannel::initSender] initSender - Results List: ${connectivityResults.toString()}",
+      "[CurrentWifiChannel::initSender] initSender - Results List: ${connectivityResults.toString()}",
     );
     final networkInfoManager = NetworkInfo();
     String? ssid;
@@ -220,16 +220,16 @@ class CurrentWifiDataChannel extends DataChannel {
       ip = (await networkInfoManager.getWifiIP())!;
 
       debugPrint(
-        "[SimpleWifiChannel::initSender] Sender successfully initialized.",
+        "[CurrentWifiChannel::initSender] Sender successfully initialized.",
       );
-      debugPrint("[SimpleWifiChannel::initSender]     IP: $ip");
-      debugPrint("[SimpleWifiChannel::initSender]     SSID: $ssid");
-      debugPrint("[SimpleWifiChannel::initSender]     BSSID: $bssid");
-      debugPrint("[SimpleWifiChannel::initSender]     Gateway: $gatewayIp");
-      debugPrint("[SimpleWifiChannel::initSender]     Submask: $submask");
+      debugPrint("[CurrentWifiChannel::initSender]     IP: $ip");
+      debugPrint("[CurrentWifiChannel::initSender]     SSID: $ssid");
+      debugPrint("[CurrentWifiChannel::initSender]     BSSID: $bssid");
+      debugPrint("[CurrentWifiChannel::initSender]     Gateway: $gatewayIp");
+      debugPrint("[CurrentWifiChannel::initSender]     Submask: $submask");
     } else if (connectivityResults.isNotEmpty && Platform.isLinux) {
       debugPrint(
-        "[SimpleWifiChannel::initSender] linux system, getting wifi information ",
+        "[CurrentWifiChannel::initSender] linux system, getting wifi information ",
       );
       Map<String, String>? activeInterfaceInfo =
           await SimpleWifiUtils.getIpAndMaskForActiveInterfaceByType("wifi");
@@ -239,7 +239,7 @@ class CurrentWifiDataChannel extends DataChannel {
         ip = activeInterfaceInfo['ip'];
 
         debugPrint(
-          "[SimpleWifiChannel::initSender] Wifi information ip: $ip and mask $submask",
+          "[CurrentWifiChannel::initSender] Wifi information ip: $ip and mask $submask",
         );
       }
     }
@@ -274,14 +274,14 @@ class CurrentWifiDataChannel extends DataChannel {
     server = await ServerSocket.bind(address, 0);
     server?.listen((clientSocket) {
       debugPrint(
-        '[SimpleWifiChannel::initSender] Connection from ${clientSocket.remoteAddress.address}:${clientSocket.remotePort}',
+        '[CurrentWifiChannel::initSender] Connection from ${clientSocket.remoteAddress.address}:${clientSocket.remotePort}',
       );
       client = clientSocket;
     });
 
     // Send socket information to client.
     debugPrint(
-      "[SimpleWifiChannel::initSender] Sending Channel Metadata to client..",
+      "[CurrentWifiChannel::initSender] Sending Channel Metadata to client..",
     );
     data = ChannelMetadata(
       super.identifier,
@@ -318,10 +318,10 @@ class CurrentWifiDataChannel extends DataChannel {
     packet.add(data);
 
     debugPrint(
-      "[SimpleWifiChannel::sendMessage] Sending data: ${data.toString()}",
+      "[CurrentWifiChannel::sendMessage] Sending data: ${data.toString()}",
     );
     debugPrint(
-      "[SimpleWifiChannel::sendMessage] Data length: ${length.toString()}",
+      "[CurrentWifiChannel::sendMessage] Data length: ${length.toString()}",
     );
 
     client!.add(packet.toBytes());
@@ -346,13 +346,13 @@ class CurrentWifiDataChannel extends DataChannel {
   Future<void> dealWithClientConnections() async {
     while (client == null) {
       debugPrint(
-        "[SimpleWifiChannel::dealWithClientConnections] Waiting for client to connect...",
+        "[CurrentWifiChannel::dealWithClientConnections] Waiting for client to connect...",
       );
       await Future.delayed(const Duration(milliseconds: 500));
     }
 
     debugPrint(
-      "[SimpleWifiChannel::dealWithClientConnections] Client Connected !",
+      "[CurrentWifiChannel::dealWithClientConnections] Client Connected !",
     );
 
     client!.listen((data) {
@@ -360,10 +360,10 @@ class CurrentWifiDataChannel extends DataChannel {
       if (!useProtoBuf) {
         final jsonString = String.fromCharCodes(data); // Decode bytes to string
         debugPrint(
-          "[SimpleWifiChannel::dealWithClientConnections] JSON String Received: $jsonString",
+          "[CurrentWifiChannel::dealWithClientConnections] JSON String Received: $jsonString",
         );
         debugPrint(
-          "[SimpleWifiChannel::dealWithClientConnections] Decoding JSON message",
+          "[CurrentWifiChannel::dealWithClientConnections] Decoding JSON message",
         );
         ackMsg = VeniceMessage.fromJson(jsonString);
       } else {
