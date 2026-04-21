@@ -151,7 +151,7 @@ class CurrentWifiDataChannel extends DataChannel {
             messageBytes,
           ); //String.fromCharCodes(data); // Decode bytes to string
           debugPrint(
-            "CurrentWifiChannel::client.listen]==> MESSAGE RECEIVED $jsonString",
+            "[CurrentWifiChannel::client.listen]==> MESSAGE RECEIVED $jsonString",
           );
           msg = VeniceMessage.fromJson(jsonString);
         } else {
@@ -162,18 +162,18 @@ class CurrentWifiDataChannel extends DataChannel {
         try {
           int msgId = msg.messageId;
           debugPrint(
-            "CurrentWifiChannel::client.listen]==> MESSAGE #$msgId COMPLETE",
+            "[CurrentWifiChannel::client.listen]==> MESSAGE #$msgId COMPLETE",
           );
           on(DataChannelEvent.data, msg);
           debugPrint(
-            "CurrentWifiChannel::client.listen]==> Sending acknowledgement",
+            "[CurrentWifiChannel::client.listen]==> Sending acknowledgement",
           );
           if (!useProtoBuf) {
-            debugPrint("CurrentWifiChannel::client.listen]==> Sending JSON Ack");
+            debugPrint("[CurrentWifiChannel::client.listen]==> Sending JSON Ack");
             client!.write(VeniceMessage.acknowledgement(msgId).toJson());
           } else {
             debugPrint(
-              "CurrentWifiChannel::client.listen]==> Sending ProtoBuf Ack",
+              "[CurrentWifiChannel::client.listen]==> Sending ProtoBuf Ack",
             );
             VeniceMessageProto messageProto = VeniceMessage.acknowledgement(
               msgId,
@@ -184,13 +184,13 @@ class CurrentWifiDataChannel extends DataChannel {
           }
           await client!.flush();
           debugPrint(
-            "CurrentWifiChannel::client.listen]==> Acknowledgement sent",
+            "[CurrentWifiChannel::client.listen]==> Acknowledgement sent",
           );
           buffer.removeRange(0, 4 + messageLength);
           messageLength = -1;
         } catch (e) {
           debugPrint(
-            "CurrentWifiChannel::client.listen]==> MESSAGE NOT COMPLETE, WAITING FOR NEXT DATA",
+            "[CurrentWifiChannel::client.listen]==> MESSAGE NOT COMPLETE, WAITING FOR NEXT DATA",
           );
         }
       }
@@ -318,10 +318,7 @@ class CurrentWifiDataChannel extends DataChannel {
     packet.add(data);
 
     debugPrint(
-      "[CurrentWifiChannel::sendMessage] Sending data: ${data.toString()}",
-    );
-    debugPrint(
-      "[CurrentWifiChannel::sendMessage] Data length: ${length.toString()}",
+      "[CurrentWifiChannel::sendMessage] Sending data (length: ${length.toString()})",
     );
 
     client!.add(packet.toBytes());
